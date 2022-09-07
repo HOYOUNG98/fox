@@ -7,7 +7,7 @@ def guess_color(event, _):
 
     # Get colors to compare
     color_today = color_of_the_day()
-    color_guess = event["guess"]
+    color_guess = event['queryStringParameters']["guess"]
 
     # Figure which color is most different
     rgb = ["red", "green", "blue"]
@@ -22,21 +22,15 @@ def guess_color(event, _):
     
 
     # Create response data
-    if max_idx == -1:
-        return {
-            "statusCode": 200,
-            "body": {
-                "message": "You got it!"
-            }
-        }
-    else:
-        more_less = "more" if max_diff > 0 else "less"
-        return {
-            "statusCode": 200,
-            "body": {
-                "message": "You need {} {}!".format(more_less, rgb[max_idx])
-            }
-        }
+    more_less = "more" if max_diff > 0 else "less"
+    message = "You got it!" if max_idx == -1 else "You need {} {}!".format(more_less, rgb[max_idx])
+    
+    return {
+        "isBase64Encoded": True,
+        "statusCode": 200,
+        "headers": {"Access-Control-Allow-Origin": "*"},
+        "body": json.dumps(message)
+    }
 
 
 def color_of_the_day():
