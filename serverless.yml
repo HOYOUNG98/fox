@@ -1,0 +1,23 @@
+service: fox
+provider:
+  name: aws
+  runtime: python3.7
+  region: us-east-1
+custom:
+  pythonRequirements:
+    dockerizePip: true
+package:
+  individually: false
+  exclude:
+    - package.json
+    - package-log.json
+    - node_modules/**
+functions:
+  guess_color:
+    handler: handler.guess_color
+    events:
+      - http:
+          path: guess_color
+          method: get
+plugins:
+  - serverless-python-requirements
