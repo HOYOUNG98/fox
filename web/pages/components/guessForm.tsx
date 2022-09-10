@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC } from "react";
 import { Field, Form, Formik } from "formik";
 import {
   FormControl,
@@ -10,7 +10,6 @@ import {
   InputLeftAddon,
   Button,
   Flex,
-  Spacer,
   Box,
 } from "@chakra-ui/react";
 
@@ -22,8 +21,6 @@ interface GuessFormProps {
 }
 
 export const GuessForm: FC<GuessFormProps> = ({ guesses, setGuesses }) => {
-  const [isLoading, setLoading] = useState(false);
-
   const validateName = (value: string) => {
     let re = /[0-9A-Fa-f]{6}/g;
     let error;
@@ -41,8 +38,6 @@ export const GuessForm: FC<GuessFormProps> = ({ guesses, setGuesses }) => {
     <Formik
       initialValues={{ guess: "" }}
       onSubmit={(values, actions) => {
-        setLoading(true);
-        console.log(values, actions);
         axios
           .get(
             `https://ofztj4z2s7.execute-api.us-east-1.amazonaws.com/dev/guess_color?guess=${values.guess}`
@@ -56,14 +51,14 @@ export const GuessForm: FC<GuessFormProps> = ({ guesses, setGuesses }) => {
           .catch(function (error) {
             console.log(error);
           });
-        setLoading(false);
+        actions.setSubmitting(false);
       }}
     >
-      {(_) => (
+      {(props) => (
         <Form>
           <Field name="guess" validate={validateName}>
             {({ field, form }: any) => (
-              <FormControl isInvalid={form.errors.name && form.touched.name}>
+              <FormControl isInvalid={form.errors.guess && form.touched.guess}>
                 <FormLabel>Your Guess</FormLabel>
                 <Flex>
                   <Box flexGrow={1}>
@@ -71,12 +66,12 @@ export const GuessForm: FC<GuessFormProps> = ({ guesses, setGuesses }) => {
                       <InputLeftAddon children="#" />
                       <Input {...field} type="text" placeholder="guess" />
                     </InputGroup>
-                    <FormErrorMessage>{form.errors.name}</FormErrorMessage>
+                    <FormErrorMessage>{form.errors.guess}</FormErrorMessage>
                   </Box>
                   <Button
                     w="100px"
                     colorScheme="gray"
-                    isLoading={isLoading}
+                    isLoading={props.isSubmitting}
                     type="submit"
                   >
                     Submit

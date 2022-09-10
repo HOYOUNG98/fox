@@ -12,7 +12,6 @@ export interface guessResult {
 const Home: NextPage = () => {
   const [guesses, setGuesses] = useState<Array<guessResult>>([]);
 
-  console.log(guesses);
   return (
     <div>
       <GuessForm guesses={guesses} setGuesses={setGuesses} />
