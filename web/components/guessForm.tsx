@@ -13,7 +13,7 @@ import {
   Box,
 } from "@chakra-ui/react";
 
-import { guessResult } from "..";
+import { guessResult } from "../pages";
 
 interface GuessFormProps {
   guesses: Array<guessResult>;

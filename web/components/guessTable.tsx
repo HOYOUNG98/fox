@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/table";
 import { FC } from "react";
 
-import { guessResult } from "..";
+import { guessResult } from "../pages";
 
 interface GuessTableProps {
   guesses: Array<guessResult>;
