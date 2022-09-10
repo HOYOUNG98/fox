@@ -3,11 +3,7 @@ import { useState } from "react";
 
 import { GuessForm } from "../components/guessForm";
 import { GuessTable } from "../components/guessTable";
-
-export interface guessResult {
-  guess: string;
-  response: string;
-}
+import { guessResult } from "../types";
 
 const Home: NextPage = () => {
   const [guesses, setGuesses] = useState<Array<guessResult>>([]);
