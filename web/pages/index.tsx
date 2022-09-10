@@ -1,51 +1,20 @@
-import type { NextPage } from 'next'
-import styles from '../styles/Home.module.css'
-import axios from 'axios';
-import { useState } from 'react';
+import type { NextPage } from "next";
+import { useState } from "react";
 
+import { GuessForm } from "../components/guessForm";
+import { GuessTable } from "../components/guessTable";
+import { guessResult } from "../types";
 
 const Home: NextPage = () => {
+  const [guesses, setGuesses] = useState<Array<guessResult>>([]);
 
-  const [guess, setGuess] = useState("")
-  const [response, setResponse] = useState("")
-  const [guesses, setGuesses] = useState<Array<Array<string>>>([])
-
-  const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.preventDefault();
-
-    setGuess(e.target.value)
-  }
-
-  const onSubmit = (e:React.FormEvent<HTMLInputElement>) => {
-    e.preventDefault();
-    console.log("refresh prevented");
-
-    axios.get(`https://ofztj4z2s7.execute-api.us-east-1.amazonaws.com/dev/guess_color?guess=${guess}`)
-      .then(function (response) {
-        setResponse(response.data)
-        setGuesses([[guess, response.data],...guesses])
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
-  };
-  
   return (
-    <div className={styles.container}>
+    <div>
+      <GuessForm guesses={guesses} setGuesses={setGuesses} />
 
-      <form>
-        <label >
-          Your Guess:
-          <input type="text" name="name" value={guess} onChange={onChange}/>
-        </label>
-        <input type="submit" value="Submit" onClick={onSubmit}/>
-        <div>{response}</div>
-
-        <div >Your Guesses</div>
-        {guesses.map((guess,idx)=> <div key={idx}>{guess}</div>)}
-      </form>
+      <GuessTable guesses={guesses} />
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
