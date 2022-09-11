@@ -1,3 +1,4 @@
+import { Container } from "@chakra-ui/layout";
 import type { NextPage } from "next";
 import { useState } from "react";
 
@@ -9,11 +10,11 @@ const Home: NextPage = () => {
   const [guesses, setGuesses] = useState<Array<guessResult>>([]);
 
   return (
-    <div>
+    <Container maxW="5xl" marginTop="20px">
       <GuessForm guesses={guesses} setGuesses={setGuesses} />
 
       <GuessTable guesses={guesses} />
-    </div>
+    </Container>
   );
 };
 
