@@ -22,6 +22,7 @@ export const GuessTable: FC<GuessTableProps> = ({ guesses }) => {
       <Table size="sm">
         <Thead>
           <Tr>
+            <Th>Guess#</Th>
             <Th>Color</Th>
             <Th>HexCode</Th>
             <Th>Message</Th>
@@ -29,11 +30,12 @@ export const GuessTable: FC<GuessTableProps> = ({ guesses }) => {
         </Thead>
         <Tbody>
           {guesses.map((guess, idx) => (
-            <Tr key={idx}>
+            <Tr key={guesses.length - idx}>
+              <Td>{idx + 1}</Td>
               <Td>
                 <Box bg={"#" + guess.guess} w="10px" h="10px"></Box>
               </Td>
-              <Td>{guess.guess}</Td>
+              <Td>{"#" + guess.guess.toUpperCase()}</Td>
               <Td>{guess.response}</Td>
             </Tr>
           ))}
