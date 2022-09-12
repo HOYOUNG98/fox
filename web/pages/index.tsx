@@ -1,4 +1,4 @@
-import { Button } from "@chakra-ui/react";
+import { Button, Flex, Heading, Input, Spacer } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -10,8 +10,9 @@ const URL = "wss://45dl55ctc3.execute-api.us-east-1.amazonaws.com/production/";
 
 const Home: NextPage = () => {
   const [guesses, setGuesses] = useState<Array<guessResult>>([]);
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [team, setTeam] = useState<string>("");
 
-  const [isConnected, setIsConnected] = useState(false);
   const socket = useRef<WebSocket | null>(null);
 
   const onSocketOpen = useCallback(() => {
@@ -24,7 +25,7 @@ const Home: NextPage = () => {
 
   const onConnect = useCallback(() => {
     if (!socket.current || socket.current?.readyState == WebSocket.OPEN) {
-      socket.current = new WebSocket(URL + "?team_name=love");
+      socket.current = new WebSocket(URL + `?team_name=${team}`);
       socket.current.addEventListener("open", onSocketOpen);
       socket.current.addEventListener("close", onSocketClose);
       socket.current.addEventListener("message", (event) => {
@@ -37,7 +38,7 @@ const Home: NextPage = () => {
         }
       });
     }
-  }, [guesses]);
+  }, [guesses, team]);
 
   const onDisconnect = useCallback(() => {
     if (isConnected) {
@@ -55,10 +56,18 @@ const Home: NextPage = () => {
     );
   }, []);
 
+  const handleTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    setTeam(e.target.value);
+  };
+
   return (
     <div>
       {!isConnected ? (
-        <Button onClick={onConnect}>Connect</Button>
+        <Flex>
+          <Input onChange={handleTeamNameChange} />
+          <Button onClick={onConnect}>Join</Button>
+        </Flex>
       ) : (
         <Button onClick={onDisconnect}>Disconnect</Button>
       )}

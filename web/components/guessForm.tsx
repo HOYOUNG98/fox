@@ -55,6 +55,7 @@ export const GuessForm: FC<GuessFormProps> = ({
               ...guesses,
             ]);
 
+            // Check if socket connection is established and act accordingly
             if (isConnected) {
               onSendResponse(values.guess, response.data);
             }
