@@ -29,13 +29,11 @@ const Home: NextPage = () => {
       socket.current.addEventListener("open", onSocketOpen);
       socket.current.addEventListener("close", onSocketClose);
       socket.current.addEventListener("message", (event) => {
-        if (!event.data.startsWith("new")) {
-          var response = JSON.parse(event.data);
-          setGuesses((guesses) => [
-            { guess: response.guess, response: response.response },
-            ...guesses,
-          ]);
-        }
+        var response = JSON.parse(event.data);
+        setGuesses((guesses) => [
+          { guess: response.guess, response: response.response },
+          ...guesses,
+        ]);
       });
     }
   }, [guesses, team]);

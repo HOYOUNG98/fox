@@ -51,11 +51,6 @@ def handle_connect(team_name, connection_id, client, table):
             }
         )
 
-        for conn_id in members:
-            if conn_id != connection_id:
-                client.post_to_connection(
-                    Data=f"new player joined the game", ConnectionId=conn_id)
-
     # create new members list
     else:
         table.put_item(Item={'team_name': team_name,
