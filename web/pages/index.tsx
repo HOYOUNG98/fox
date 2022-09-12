@@ -14,35 +14,60 @@ const Home: NextPage = () => {
   const [isConnected, setIsConnected] = useState(false);
   const socket = useRef<WebSocket | null>(null);
 
-  const onConnect = useCallback(() => {
-    if (!socket.current || socket.current?.readyState == WebSocket.OPEN) {
-      socket.current = new WebSocket(URL + "?team_name=love");
-      socket.current.addEventListener("message", (event) => {
-        console.log(event.data);
-      });
-    }
+  const onSocketOpen = useCallback(() => {
     setIsConnected(true);
   }, []);
 
-  const onDisconnect = useCallback(() => {
-    socket.current?.close();
+  const onSocketClose = useCallback(() => {
+    setIsConnected(false);
   }, []);
 
-  useEffect(() => {
-    return () => {
+  const onConnect = useCallback(() => {
+    if (!socket.current || socket.current?.readyState == WebSocket.OPEN) {
+      socket.current = new WebSocket(URL + "?team_name=love");
+      socket.current.addEventListener("open", onSocketOpen);
+      socket.current.addEventListener("close", onSocketClose);
+      socket.current.addEventListener("message", (event) => {
+        if (!event.data.startsWith("new")) {
+          var response = JSON.parse(event.data);
+          setGuesses((guesses) => [
+            { guess: response.guess, response: response.response },
+            ...guesses,
+          ]);
+        }
+      });
+    }
+  }, [guesses]);
+
+  const onDisconnect = useCallback(() => {
+    if (isConnected) {
       socket.current?.close();
-      setIsConnected(false);
-    };
+    }
+  }, [isConnected]);
+
+  const onSendResponse = useCallback((guess: string, response: string) => {
+    socket.current?.send(
+      JSON.stringify({
+        action: "send_team",
+        guess,
+        response,
+      })
+    );
   }, []);
 
   return (
     <div>
-      {isConnected ? (
+      {!isConnected ? (
         <Button onClick={onConnect}>Connect</Button>
       ) : (
         <Button onClick={onDisconnect}>Disconnect</Button>
       )}
-      <GuessForm guesses={guesses} setGuesses={setGuesses} />
+      <GuessForm
+        guesses={guesses}
+        setGuesses={setGuesses}
+        isConnected={isConnected}
+        onSendResponse={onSendResponse}
+      />
 
       <GuessTable guesses={guesses} />
     </div>
