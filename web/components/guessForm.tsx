@@ -18,9 +18,16 @@ import { guessResult } from "../types";
 interface GuessFormProps {
   guesses: Array<guessResult>;
   setGuesses: Dispatch<React.SetStateAction<Array<guessResult>>>;
+  isConnected: boolean;
+  onSendResponse: any;
 }
 
-export const GuessForm: FC<GuessFormProps> = ({ guesses, setGuesses }) => {
+export const GuessForm: FC<GuessFormProps> = ({
+  guesses,
+  setGuesses,
+  isConnected,
+  onSendResponse,
+}) => {
   const validateName = (value: string) => {
     let re = /[0-9A-Fa-f]{6}/g;
     let error;
@@ -47,6 +54,11 @@ export const GuessForm: FC<GuessFormProps> = ({ guesses, setGuesses }) => {
               { guess: values.guess, response: response.data },
               ...guesses,
             ]);
+
+            // Check if socket connection is established and act accordingly
+            if (isConnected) {
+              onSendResponse(values.guess, response.data);
+            }
           })
           .catch(function (error) {
             console.log(error);
