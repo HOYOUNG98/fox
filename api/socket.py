@@ -2,7 +2,8 @@ import json
 import boto3
 
 ENDPOINT = "https://45dl55ctc3.execute-api.us-east-1.amazonaws.com/production/"
-TABLE_NAME = "fox"
+TABLE_NAME_TEAMS = "fox-teams"
+TABLE_NAME_CONNECTIONS = "fox-connections"
 
 # (Key: Value) = (team_name: [connection_id])
 TEAMS = {}
@@ -10,35 +11,48 @@ TEAMS = {}
 
 def handle_socket(event, _):
 
-    table = boto3.resource('dynamodb').Table(TABLE_NAME)
+    table_teams = boto3.resource('dynamodb').Table(TABLE_NAME_TEAMS)
 
     route_key = event.get('requestContext', {}).get('routeKey')
     connection_id = event.get('requestContext', {}).get('connectionId')
-    team_name = event.get('queryStringParameters', {
-                          "team_name": "love"}).get('team_name')
     client = boto3.client('apigatewaymanagementapi', endpoint_url=ENDPOINT)
+
+    # Set or fetch team name
+    table_connections = boto3.resource(
+        'dynamodb').Table(TABLE_NAME_CONNECTIONS)
+    team_name = event.get('queryStringParameters', {}).get('team_name')
+    if team_name:
+        table_connections.put_item(
+            Item={'connection_id': connection_id, 'team_name': team_name})
+    else:
+        res = table_connections.get_item(
+            Key={'connection_id': connection_id}
+        )
+        team_name = res['Item']['team_name']
 
     if route_key is None or connection_id is None:
         return {'statusCode': 400}
 
     if route_key == "$connect":
-        handle_connect(team_name, connection_id, client, table)
+        handle_connect(team_name, connection_id, table_teams)
 
     elif route_key == "$disconnect":
-        handle_disconnect(team_name, connection_id, table)
+        handle_disconnect(team_name, connection_id,
+                          table_teams, table_connections)
 
     elif route_key == "send_team":
-        handle_send_team(team_name, connection_id,
-                         client, json.loads(event["body"]), table)
+        handle_send_team(team_name, connection_id, client,
+                         json.loads(event["body"]), table_teams)
 
     return {
         'statusCode': 200
     }
 
 
-def handle_connect(team_name, connection_id, client, table):
-
+def handle_connect(team_name, connection_id, table):
+    # try fetching team_name
     res = table.get_item(Key={'team_name': team_name})
+    print(res)
 
     # update the team members
     if 'Item' in res:
@@ -57,13 +71,12 @@ def handle_connect(team_name, connection_id, client, table):
                        "members": [connection_id]})
 
 
-def handle_disconnect(team_name, connection_id, table):
-
-    res = table.get_item(Key={'team_name': team_name})
+def handle_disconnect(team_name, connection_id, table_teams, table_connections):
+    res = table_teams.get_item(Key={'team_name': team_name})
     members = res['Item']['members']
 
     if len(members) != 1:
-        table.update_item(
+        table_teams.update_item(
             Key={'team_name': team_name},
             UpdateExpression='SET members = :val1',
             ExpressionAttributeValues={
@@ -71,9 +84,13 @@ def handle_disconnect(team_name, connection_id, table):
             }
         )
     else:
-        table.delete_item(
+        table_teams.delete_item(
             Key={'team_name': team_name}
         )
+
+    table_connections.delete_item(
+        Key={'connection_id': connection_id}
+    )
 
 
 def handle_send_team(team_name, connection_id, client, body, table):
