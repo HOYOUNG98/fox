@@ -3,6 +3,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - 'api'
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -25,3 +27,4 @@ jobs:
           aws-region: us-east-1
       - name: Serverless Deploy
         run: npm run-script deploy
+        working-directory: api
