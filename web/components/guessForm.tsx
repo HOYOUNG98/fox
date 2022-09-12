@@ -42,58 +42,66 @@ export const GuessForm: FC<GuessFormProps> = ({
   };
 
   return (
-    <Formik
-      initialValues={{ guess: "" }}
-      onSubmit={(values, actions) => {
-        axios
-          .get(
-            `https://ofztj4z2s7.execute-api.us-east-1.amazonaws.com/dev/guess_color?guess=${values.guess}`
-          )
-          .then(function (response) {
-            setGuesses([
-              { guess: values.guess, response: response.data },
-              ...guesses,
-            ]);
+    <Box margin="20px 0px">
+      <Formik
+        initialValues={{ guess: "" }}
+        onSubmit={(values, actions) => {
+          axios
+            .get(
+              `https://ofztj4z2s7.execute-api.us-east-1.amazonaws.com/dev/guess_color?guess=${values.guess}`
+            )
+            .then(function (response) {
+              setGuesses([
+                { guess: values.guess, response: response.data },
+                ...guesses,
+              ]);
 
-            // Check if socket connection is established and act accordingly
-            if (isConnected) {
-              onSendResponse(values.guess, response.data);
-            }
-          })
-          .catch(function (error) {
-            console.log(error);
-          });
-        actions.setSubmitting(false);
-      }}
-    >
-      {(props) => (
-        <Form>
-          <Field name="guess" validate={validateName}>
-            {({ field, form }: any) => (
-              <FormControl isInvalid={form.errors.guess && form.touched.guess}>
-                <FormLabel>Your Guess</FormLabel>
-                <Flex>
-                  <Box flexGrow={1}>
-                    <InputGroup>
-                      <InputLeftAddon children="#" />
-                      <Input {...field} type="text" placeholder="guess" />
-                    </InputGroup>
-                    <FormErrorMessage>{form.errors.guess}</FormErrorMessage>
-                  </Box>
-                  <Button
-                    w="100px"
-                    colorScheme="gray"
-                    isLoading={props.isSubmitting}
-                    type="submit"
-                  >
-                    Submit
-                  </Button>
-                </Flex>
-              </FormControl>
-            )}
-          </Field>
-        </Form>
-      )}
-    </Formik>
+              // Check if socket connection is established and act accordingly
+              if (isConnected) {
+                onSendResponse(values.guess, response.data);
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+            });
+          actions.setSubmitting(false);
+        }}
+      >
+        {(props) => (
+          <Form>
+            <Field name="guess" validate={validateName}>
+              {({ field, form }: any) => (
+                <FormControl
+                  isInvalid={form.errors.guess && form.touched.guess}
+                >
+                  <Flex>
+                    <Box flexGrow={1}>
+                      <InputGroup>
+                        <InputLeftAddon children="#" />
+                        <Input {...field} type="text" placeholder="guess" />
+                      </InputGroup>
+                      {form.errors.guess && form.touched.guess ? (
+                        <FormErrorMessage>{form.errors.guess}</FormErrorMessage>
+                      ) : (
+                        // Empty Box to match spacing of error message
+                        <Box h="25px"></Box>
+                      )}
+                    </Box>
+                    <Button
+                      w="100px"
+                      colorScheme="gray"
+                      isLoading={props.isSubmitting}
+                      type="submit"
+                    >
+                      Submit
+                    </Button>
+                  </Flex>
+                </FormControl>
+              )}
+            </Field>
+          </Form>
+        )}
+      </Formik>
+    </Box>
   );
 };
