@@ -43,7 +43,7 @@ const Home: NextPage = () => {
 
   const onConnect = useCallback(
     (team: string) => {
-      if (!socket.current || socket.current?.readyState == WebSocket.OPEN) {
+      if (!socket.current || socket.current?.readyState == WebSocket.CLOSED) {
         socket.current = new WebSocket(URL + `?team_name=${team}`);
         socket.current.addEventListener("open", onSocketOpen);
         socket.current.addEventListener("close", onSocketClose);
@@ -60,10 +60,8 @@ const Home: NextPage = () => {
   );
 
   const onDisconnect = useCallback(() => {
-    if (isConnected) {
-      socket.current?.close();
-    }
-  }, [isConnected]);
+    socket.current?.close();
+  }, []);
 
   const onSendResponse = useCallback((guess: string, response: string) => {
     socket.current?.send(

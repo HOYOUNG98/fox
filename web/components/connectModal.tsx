@@ -62,6 +62,7 @@ export const ConnectModal: FC<ConnectModal> = ({
               <Input
                 onChange={handleTeamNameChange}
                 placeholder="Team Name"
+                value={team}
                 disabled={isConnected}
               />
             </FormControl>
