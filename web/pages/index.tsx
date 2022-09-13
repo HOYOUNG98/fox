@@ -19,10 +19,25 @@ const Home: NextPage = () => {
   const socket = useRef<WebSocket | null>(null);
 
   const onSocketOpen = useCallback(() => {
+    toast({
+      title: "Connection Established!",
+      description: `You have joined ${team}`,
+      status: "success",
+      duration: 5000,
+      isClosable: true,
+    });
+
     setIsConnected(true);
   }, []);
 
   const onSocketClose = useCallback(() => {
+    toast({
+      title: "You Left the Team",
+      status: "warning",
+      duration: 5000,
+      isClosable: true,
+    });
+
     setIsConnected(false);
   }, []);
 
@@ -38,14 +53,6 @@ const Home: NextPage = () => {
             { guess: response.guess, response: response.response },
             ...guesses,
           ]);
-        });
-
-        toast({
-          title: "Connection Established!",
-          description: `You have joined ${team}`,
-          status: "success",
-          duration: 5000,
-          isClosable: true,
         });
       }
     },
