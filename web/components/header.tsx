@@ -1,5 +1,13 @@
 import { Dispatch, FC } from "react";
-import { Flex, Heading, Stack, Text, Spacer, Box } from "@chakra-ui/react";
+import {
+  Flex,
+  Heading,
+  Stack,
+  Text,
+  Spacer,
+  Box,
+  Center,
+} from "@chakra-ui/react";
 import { ConnectModal } from "./connectModal";
 
 interface HeaderProps {
@@ -22,7 +30,7 @@ export const Header: FC<HeaderProps> = ({
       <Flex display="flex">
         <Heading size="lg">Guess Today's Color!</Heading>
         <Spacer />
-        <Box justifyContent="center" alignItems="center">
+        <Center>
           <ConnectModal
             isConnected={isConnected}
             onConnect={onConnect}
@@ -30,7 +38,7 @@ export const Header: FC<HeaderProps> = ({
             setTeam={setTeam}
             team={team}
           />
-        </Box>
+        </Center>
       </Flex>
       <Box>
         <Text marginRight="50px">

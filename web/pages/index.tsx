@@ -1,7 +1,8 @@
 import { Container } from "@chakra-ui/layout";
-import { useToast } from "@chakra-ui/react";
+import { Flex, Spacer, useToast } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useCallback, useRef, useState } from "react";
+import { Footer } from "../components/footer";
 
 import { GuessForm } from "../components/guessForm";
 import { GuessTable } from "../components/guessTable";
@@ -75,22 +76,27 @@ const Home: NextPage = () => {
 
   return (
     <Container maxW="5xl" marginTop="20px">
-      <Header
-        isConnected={isConnected}
-        onConnect={onConnect}
-        onDisconnect={onDisconnect}
-        setTeam={setTeam}
-        team={team}
-      />
+      <Flex direction="column" height="95vh">
+        <Header
+          isConnected={isConnected}
+          onConnect={onConnect}
+          onDisconnect={onDisconnect}
+          setTeam={setTeam}
+          team={team}
+        />
 
-      <GuessForm
-        guesses={guesses}
-        setGuesses={setGuesses}
-        isConnected={isConnected}
-        onSendResponse={onSendResponse}
-      />
+        <GuessForm
+          guesses={guesses}
+          setGuesses={setGuesses}
+          isConnected={isConnected}
+          onSendResponse={onSendResponse}
+        />
 
-      <GuessTable guesses={guesses} />
+        <GuessTable guesses={guesses} />
+
+        <Spacer />
+        <Footer />
+      </Flex>
     </Container>
   );
 };
