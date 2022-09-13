@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { Dispatch, FC } from "react";
 import {
   Button,
   FormControl,
@@ -17,17 +17,20 @@ import {
 
 interface ConnectModal {
   isConnected: boolean;
-  onConnect: any;
-  onDisconnect: any;
+  onConnect: (team: string) => void;
+  onDisconnect: () => void;
+  setTeam: Dispatch<React.SetStateAction<string>>;
+  team: string;
 }
 
 export const ConnectModal: FC<ConnectModal> = ({
   isConnected,
   onConnect,
   onDisconnect,
+  setTeam,
+  team,
 }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [team, setTeam] = useState("");
 
   const handleTeamNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -59,6 +62,7 @@ export const ConnectModal: FC<ConnectModal> = ({
               <Input
                 onChange={handleTeamNameChange}
                 placeholder="Team Name"
+                value={team}
                 disabled={isConnected}
               />
             </FormControl>
