@@ -30,8 +30,8 @@ export const GuessTable: FC<GuessTableProps> = ({ guesses }) => {
         </Thead>
         <Tbody>
           {guesses.map((guess, idx) => (
-            <Tr key={guesses.length - idx}>
-              <Td>{idx + 1}</Td>
+            <Tr key={idx}>
+              <Td>{guesses.length - idx}</Td>
               <Td>
                 <Box bg={"#" + guess.guess} w="10px" h="10px"></Box>
               </Td>

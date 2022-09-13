@@ -1,9 +1,8 @@
 import axios from "axios";
-import { Dispatch, FC } from "react";
+import React, { Dispatch, FC } from "react";
 import { Field, Form, Formik } from "formik";
 import {
   FormControl,
-  FormLabel,
   FormErrorMessage,
   Input,
   InputGroup,
@@ -19,7 +18,7 @@ interface GuessFormProps {
   guesses: Array<guessResult>;
   setGuesses: Dispatch<React.SetStateAction<Array<guessResult>>>;
   isConnected: boolean;
-  onSendResponse: any;
+  onSendResponse: (guess: string, response: string) => void;
 }
 
 export const GuessForm: FC<GuessFormProps> = ({

@@ -13,6 +13,7 @@ const URL = "wss://45dl55ctc3.execute-api.us-east-1.amazonaws.com/production/";
 const Home: NextPage = () => {
   const [guesses, setGuesses] = useState<Array<guessResult>>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [team, setTeam] = useState<string>("");
   const toast = useToast();
 
   const socket = useRef<WebSocket | null>(null);
@@ -73,6 +74,8 @@ const Home: NextPage = () => {
         isConnected={isConnected}
         onConnect={onConnect}
         onDisconnect={onDisconnect}
+        setTeam={setTeam}
+        team={team}
       />
 
       <GuessForm
