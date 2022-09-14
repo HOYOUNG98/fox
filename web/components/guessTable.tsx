@@ -8,7 +8,7 @@ import {
   Tbody,
   Td,
 } from "@chakra-ui/table";
-import { FC } from "react";
+import { FC, useEffect, useState } from "react";
 
 import { guessResult } from "../types";
 
@@ -17,8 +17,12 @@ interface GuessTableProps {
 }
 
 export const GuessTable: FC<GuessTableProps> = ({ guesses }) => {
+  const boldGuess = (response: guessResult) => {
+    return response.response === "You got it!" ? "bold" : "normal";
+  };
+
   return (
-    <TableContainer>
+    <TableContainer overflowY="auto">
       <Table size="sm">
         <Thead>
           <Tr>
@@ -31,12 +35,14 @@ export const GuessTable: FC<GuessTableProps> = ({ guesses }) => {
         <Tbody>
           {guesses.map((guess, idx) => (
             <Tr key={idx}>
-              <Td>{guesses.length - idx}</Td>
+              <Td fontWeight={boldGuess(guess)}>{guesses.length - idx}</Td>
               <Td>
                 <Box bg={"#" + guess.guess} w="10px" h="10px"></Box>
               </Td>
-              <Td>{"#" + guess.guess.toUpperCase()}</Td>
-              <Td>{guess.response}</Td>
+              <Td fontWeight={boldGuess(guess)}>
+                {"#" + guess.guess.toUpperCase()}
+              </Td>
+              <Td fontWeight={boldGuess(guess)}>{guess.response}</Td>
             </Tr>
           ))}
         </Tbody>
