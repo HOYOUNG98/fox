@@ -7,7 +7,7 @@ import NextLink from "next/link";
 
 export const Footer: FC = () => {
   return (
-    <Center h="50px">
+    <Center minH="50px" maxH="50px">
       Powered by
       <NextLink href="https://github.com/HOYOUNG98/fox" passHref>
         <Icon as={FiCode} marginTop="2px" marginLeft="4px" marginRight="5px" />

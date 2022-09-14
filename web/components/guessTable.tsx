@@ -18,7 +18,7 @@ interface GuessTableProps {
 
 export const GuessTable: FC<GuessTableProps> = ({ guesses }) => {
   return (
-    <TableContainer>
+    <TableContainer overflowY="auto">
       <Table size="sm">
         <Thead>
           <Tr>

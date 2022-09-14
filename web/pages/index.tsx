@@ -93,8 +93,6 @@ const Home: NextPage = () => {
         />
 
         <GuessTable guesses={guesses} />
-
-        <Spacer />
         <Footer />
       </Flex>
     </Container>
