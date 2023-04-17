@@ -2,7 +2,7 @@ service: fox
 provider:
   name: aws
   runtime: python3.7
-  region: us-east-1
+  region: us-east-2
 custom:
   pythonRequirements:
     dockerizePip: true

@@ -34,7 +34,7 @@ def handle_socket(event, _):
         return {'statusCode': 400}
 
     if route_key == "$connect":
-        handle_connect(team_name, connection_id, table_teams)
+        handle_connect(team_name, connection_id,client , table_teams)
 
     elif route_key == "$disconnect":
         handle_disconnect(team_name, connection_id,
@@ -49,7 +49,7 @@ def handle_socket(event, _):
     }
 
 
-def handle_connect(team_name, connection_id, table):
+def handle_connect(team_name, connection_id,client, table):
     # try fetching team_name
     res = table.get_item(Key={'team_name': team_name})
     print(res)
@@ -64,6 +64,11 @@ def handle_connect(team_name, connection_id, table):
                 ':val1': members
             }
         )
+        for conn_id in res['Item']['members']:
+            if conn_id != connection_id:
+                client.post_to_connection(
+                    Data=json.dumps({"guess": body["guess"], "response": body["response"]}), ConnectionId=conn_id)
+
 
     # create new members list
     else:
