@@ -55,6 +55,13 @@ const Home: NextPage = () => {
         duration: 5000,
         isClosable: true,
       });
+    } else if (response.type === "TEAM_LEAVE") {
+      toast({
+        title: "A friend left your team...",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
     }
   }, []);
 
