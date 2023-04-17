@@ -34,7 +34,7 @@ def handle_socket(event, _):
         return {'statusCode': 400}
 
     if route_key == "$connect":
-        handle_connect(team_name, connection_id,client , table_teams)
+        handle_connect(team_name, connection_id, client, json.loads(event["body"]), table_teams)
 
     elif route_key == "$disconnect":
         handle_disconnect(team_name, connection_id,
@@ -49,7 +49,7 @@ def handle_socket(event, _):
     }
 
 
-def handle_connect(team_name, connection_id,client, table):
+def handle_connect(team_name, connection_id,client, body, table):
     # try fetching team_name
     res = table.get_item(Key={'team_name': team_name})
     print(res)

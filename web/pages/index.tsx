@@ -20,6 +20,7 @@ const Home: NextPage = () => {
   const socket = useRef<WebSocket | null>(null);
 
   const onSocketOpen = useCallback(() => {
+    console.log("?");
     toast({
       title: "Connection Established!",
       description: `You have joined ${team}`,
@@ -32,6 +33,7 @@ const Home: NextPage = () => {
   }, []);
 
   const onSocketClose = useCallback(() => {
+    console.log("!");
     toast({
       title: "You Left the Team",
       status: "warning",
@@ -44,10 +46,10 @@ const Home: NextPage = () => {
 
   const onConnect = useCallback(
     (team: string) => {
+      console.log("team", team);
       if (!socket.current || socket.current?.readyState == WebSocket.CLOSED) {
         socket.current = new WebSocket(URL + `?team_name=${team}`);
         socket.current.addEventListener("open", onSocketOpen);
-        socket.current.addEventListener("close", onSocketClose);
         socket.current.addEventListener("message", (event) => {
           var response = JSON.parse(event.data);
           setGuesses((guesses) => [
@@ -61,6 +63,7 @@ const Home: NextPage = () => {
   );
 
   const onDisconnect = useCallback(() => {
+    console.log("something wrong");
     socket.current?.close();
   }, []);
 
