@@ -99,4 +99,4 @@ def handle_send_team(team_name, connection_id, client, body, table):
 
     for conn_id in other_members:
         client.post_to_connection(
-            Data=json.dumps({"guess": body["guess"], "response": body["response"]}), ConnectionId=conn_id)
+            Data=json.dumps({"type": "TEAM_GUESS", "guess": body["guess"], "response": body["response"]}), ConnectionId=conn_id)
