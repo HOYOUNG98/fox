@@ -47,7 +47,7 @@ export const GuessForm: FC<GuessFormProps> = ({
         onSubmit={(values, actions) => {
           axios
             .get(
-              `https://ofztj4z2s7.execute-api.us-east-1.amazonaws.com/dev/guess_color?guess=${values.guess}`
+              `${process.env.NEXT_PUBLIC_LAMBDA_ENDPOINT}/dev/guess_color?guess=${values.guess}`
             )
             .then(function (response) {
               setGuesses([

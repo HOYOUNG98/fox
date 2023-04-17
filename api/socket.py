@@ -1,16 +1,12 @@
 import json
 import boto3
 
-ENDPOINT = "https://45dl55ctc3.execute-api.us-east-1.amazonaws.com/production/"
+ENDPOINT = "https://j58i16sf2d.execute-api.us-east-2.amazonaws.com/prod/"
 TABLE_NAME_TEAMS = "fox-teams"
 TABLE_NAME_CONNECTIONS = "fox-connections"
 
-# (Key: Value) = (team_name: [connection_id])
-TEAMS = {}
-
 
 def handle_socket(event, _):
-
     table_teams = boto3.resource('dynamodb').Table(TABLE_NAME_TEAMS)
 
     route_key = event.get('requestContext', {}).get('routeKey')
@@ -34,7 +30,7 @@ def handle_socket(event, _):
         return {'statusCode': 400}
 
     if route_key == "$connect":
-        handle_connect(team_name, connection_id, table_teams)
+        handle_connect(team_name, connection_id, client, table_teams)
 
     elif route_key == "$disconnect":
         handle_disconnect(team_name, connection_id,
@@ -49,14 +45,14 @@ def handle_socket(event, _):
     }
 
 
-def handle_connect(team_name, connection_id, table):
+def handle_connect(team_name, connection_id, client, table):
     # try fetching team_name
     res = table.get_item(Key={'team_name': team_name})
-    print(res)
 
     # update the team members
     if 'Item' in res:
-        members = res['Item']['members'] + [connection_id]
+        other_members = res['Item']['members']
+        members = other_members + [connection_id]
         table.update_item(
             Key={'team_name': team_name},
             UpdateExpression='SET members = :val1',
@@ -64,6 +60,10 @@ def handle_connect(team_name, connection_id, table):
                 ':val1': members
             }
         )
+
+        for conn_id in other_members:
+            client.post_to_connection(
+                Data=json.dumps({"type": "TEAM_JOIN", "ok": "true"}), ConnectionId=conn_id)
 
     # create new members list
     else:
@@ -95,9 +95,8 @@ def handle_disconnect(team_name, connection_id, table_teams, table_connections):
 
 def handle_send_team(team_name, connection_id, client, body, table):
     res = table.get_item(Key={'team_name': team_name})
-    members = res['Item']['members']
+    other_members = [member for member in res['Item']['members'] if member != connection_id]
 
-    for conn_id in members:
-        if conn_id != connection_id:
-            client.post_to_connection(
-                Data=json.dumps({"guess": body["guess"], "response": body["response"]}), ConnectionId=conn_id)
+    for conn_id in other_members:
+        client.post_to_connection(
+            Data=json.dumps({"guess": body["guess"], "response": body["response"]}), ConnectionId=conn_id)
