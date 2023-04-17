@@ -46,7 +46,6 @@ const Home: NextPage = () => {
     var response = JSON.parse(event.data);
 
     if (response.type === "TEAM_GUESS") {
-      console.log(response);
       if (event.data.guess && event.data.response) {
         setGuesses((guesses) => [
           { guess: response.guess, response: response.response },
@@ -65,7 +64,6 @@ const Home: NextPage = () => {
 
   const onConnect = useCallback(
     (team: string) => {
-      console.log("team", team);
       if (!socket.current || socket.current?.readyState == WebSocket.CLOSED) {
         socket.current = new WebSocket(
           process.env.NEXT_PUBLIC_WEBSOCKET_ENDPOINT + `/?team_name=${team}`
@@ -79,7 +77,6 @@ const Home: NextPage = () => {
   );
 
   const onDisconnect = useCallback(() => {
-    console.log("something wrong");
     socket.current?.close();
   }, []);
 

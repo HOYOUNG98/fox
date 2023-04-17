@@ -1,15 +1,12 @@
 import json
 import boto3
 
-ENDPOINT = "https://skgrj493gg.execute-api.us-east-2.amazonaws.com/dev/"
+ENDPOINT = "https://j58i16sf2d.execute-api.us-east-2.amazonaws.com/prod/"
 TABLE_NAME_TEAMS = "fox-teams"
 TABLE_NAME_CONNECTIONS = "fox-connections"
 
 
 def handle_socket(event, _):
-
-    print(event)
-
     table_teams = boto3.resource('dynamodb').Table(TABLE_NAME_TEAMS)
 
     route_key = event.get('requestContext', {}).get('routeKey')

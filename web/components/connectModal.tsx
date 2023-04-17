@@ -37,7 +37,6 @@ export const ConnectModal: FC<ConnectModal> = ({
     setTeam(e.target.value);
   };
 
-  console.log(isConnected);
   return (
     <>
       <Icon
