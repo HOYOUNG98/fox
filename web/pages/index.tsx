@@ -20,7 +20,6 @@ const Home: NextPage = () => {
   const socket = useRef<WebSocket | null>(null);
 
   const onSocketOpen = useCallback(() => {
-    console.log("?");
     toast({
       title: "Connection Established!",
       description: `You have joined ${team}`,
@@ -33,7 +32,6 @@ const Home: NextPage = () => {
   }, []);
 
   const onSocketClose = useCallback(() => {
-    console.log("!");
     toast({
       title: "You Left the Team",
       status: "warning",
@@ -44,19 +42,37 @@ const Home: NextPage = () => {
     setIsConnected(false);
   }, []);
 
+  const onSocketMessage = useCallback((event: MessageEvent<any>) => {
+    var response = JSON.parse(event.data);
+
+    if (response.type === "TEAM_GUESS") {
+      console.log(response);
+      if (event.data.guess && event.data.response) {
+        setGuesses((guesses) => [
+          { guess: response.guess, response: response.response },
+          ...guesses,
+        ]);
+      }
+    } else if (response.type === "TEAM_JOIN") {
+      toast({
+        title: "A friend joined your team!",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, []);
+
   const onConnect = useCallback(
     (team: string) => {
       console.log("team", team);
       if (!socket.current || socket.current?.readyState == WebSocket.CLOSED) {
-        socket.current = new WebSocket(URL + `?team_name=${team}`);
+        socket.current = new WebSocket(
+          process.env.NEXT_PUBLIC_WEBSOCKET_ENDPOINT + `/?team_name=${team}`
+        );
         socket.current.addEventListener("open", onSocketOpen);
-        socket.current.addEventListener("message", (event) => {
-          var response = JSON.parse(event.data);
-          setGuesses((guesses) => [
-            { guess: response.guess, response: response.response },
-            ...guesses,
-          ]);
-        });
+        socket.current.addEventListener("close", onSocketClose);
+        socket.current.addEventListener("message", onSocketMessage);
       }
     },
     [guesses]
@@ -71,6 +87,7 @@ const Home: NextPage = () => {
     socket.current?.send(
       JSON.stringify({
         action: "send_team",
+        type: "TEAM_GUESS",
         guess,
         response,
       })
