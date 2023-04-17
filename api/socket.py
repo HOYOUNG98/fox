@@ -1,7 +1,8 @@
 import json
 import boto3
 
-ENDPOINT = "https://j58i16sf2d.execute-api.us-east-2.amazonaws.com/prod/"
+ENDPOINT = "https://skgrj493gg.execute-api.us-east-2.amazonaws.com/dev/"
+# ENDPOINT = "https://j58i16sf2d.execute-api.us-east-2.amazonaws.com/prod/"
 TABLE_NAME_TEAMS = "fox-teams"
 TABLE_NAME_CONNECTIONS = "fox-connections"
 
@@ -33,7 +34,7 @@ def handle_socket(event, _):
         handle_connect(team_name, connection_id, client, table_teams)
 
     elif route_key == "$disconnect":
-        handle_disconnect(team_name, connection_id,
+        handle_disconnect(team_name, connection_id, client,
                           table_teams, table_connections)
 
     elif route_key == "send_team":
@@ -71,18 +72,22 @@ def handle_connect(team_name, connection_id, client, table):
                        "members": [connection_id]})
 
 
-def handle_disconnect(team_name, connection_id, table_teams, table_connections):
+def handle_disconnect(team_name, connection_id, client, table_teams, table_connections):
     res = table_teams.get_item(Key={'team_name': team_name})
-    members = res['Item']['members']
+    other_members = [member for member in res['Item']['members'] if member != connection_id]
 
-    if len(members) != 1:
+    if len(other_members) != 0:
         table_teams.update_item(
             Key={'team_name': team_name},
             UpdateExpression='SET members = :val1',
             ExpressionAttributeValues={
-                ':val1': list(filter(lambda id: id != connection_id, members))
+                ':val1': other_members
             }
         )
+
+        for conn_id in other_members:
+            client.post_to_connection(
+                Data=json.dumps({"type": "TEAM_LEAVE", "ok": "true"}), ConnectionId=conn_id)
     else:
         table_teams.delete_item(
             Key={'team_name': team_name}
