@@ -9,8 +9,6 @@ import { GuessTable } from "../components/guessTable";
 import { Header } from "../components/header";
 import { guessResult } from "../types";
 
-const URL = "wss://45dl55ctc3.execute-api.us-east-1.amazonaws.com/production/";
-
 const Home: NextPage = () => {
   const [guesses, setGuesses] = useState<Array<guessResult>>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
@@ -66,7 +64,7 @@ const Home: NextPage = () => {
     (team: string) => {
       if (!socket.current || socket.current?.readyState == WebSocket.CLOSED) {
         socket.current = new WebSocket(
-          process.env.NEXT_PUBLIC_WEBSOCKET_ENDPOINT + `/?team_name=${team}`
+          process.env.NEXT_PUBLIC_WEBSOCKET_ENDPOINT + `?team_name=${team}`
         );
         socket.current.addEventListener("open", onSocketOpen);
         socket.current.addEventListener("close", onSocketClose);
