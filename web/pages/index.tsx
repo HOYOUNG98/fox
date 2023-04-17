@@ -44,12 +44,10 @@ const Home: NextPage = () => {
     var response = JSON.parse(event.data);
 
     if (response.type === "TEAM_GUESS") {
-      if (event.data.guess && event.data.response) {
-        setGuesses((guesses) => [
-          { guess: response.guess, response: response.response },
-          ...guesses,
-        ]);
-      }
+      setGuesses((guesses) => [
+        { guess: response.guess, response: response.response },
+        ...guesses,
+      ]);
     } else if (response.type === "TEAM_JOIN") {
       toast({
         title: "A friend joined your team!",
